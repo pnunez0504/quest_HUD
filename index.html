@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+<body style="margin:0">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {VRButton} from 'three/addons/webxr/VRButtons.js';
+
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 100);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.xr.enabled = true;
+document.body.appendChild(VRButton.createButton(renderer));
+document.body.appendChild(renderer.domElement);
+
+// a cube, 30cm across. In VR the world is in METERS.
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(0.3, 0.3, 0.3),
+  new THREE.MeshStandardMaterial({ color: 0x5dcaa5 })
+);
+cube.position.set(0, 1.5, -1);   // 1m in front, 1.5m up ≈ standing eye height
+scene.add(cube);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 3)); // StandardMaterial needs light
+
+camera.position.set(0, 1.5, 0);  // only matters on the flat screen; VR overrides this
+renderer.setAnimationLoop(() => {
+  cube.rotation.y += 0.01;
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>
